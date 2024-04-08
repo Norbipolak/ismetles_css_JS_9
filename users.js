@@ -382,6 +382,397 @@ ez kell nekünk innen -> id=8
 import urlObj from "./url.js";
 és akkor innen ki tudjuk venni 
 
-most ide a updateUserClick-ben pedig meghívjuk a updateUser függvényt és megadjuk neki a user-t amit itt elkésí
+most ide a updateUserClick-ben pedig meghívjuk a updateUser függvényt és megadjuk neki a user-t amit itt elkészítettünk és még
+adunk neki egy id-t is, ami a urlObj-ből jön, urlObj.id, de minedezt egy eventListener-ben, amit a updateUserBtn-nek adtuk meg 
+->
+this.updateUser(user, urlObj.id);
 
+this.updateUserBtn.addEventListener("click", ()=> {
+    this.updateUser(user, urlObj.id);
+});
+
+Szóval itt meghívjuk az updateUser-t ebben a updateUserClick-ben, majd az egész updateUserClick-et pedig a class Users constructor-ában 
+-> 
+így néz ki most a class constructor-a meg az class Users a getUsers-t kivéve 
+class Users {
+    userHolder;
+    firstNameHolder;
+    lastNameHolder;
+    birthDateHolder;
+    ageHolder;
+    emailHolder;
+    addressHolder;
+    userImgHolder;
+    updateUserBtn;
+
+    constructor() {
+        this.usersHolder = document.querySelector("#users-holder");
+        this.firstNameHolder = document.querySelector("#first-name");
+        this.lastNameHolder = document.querySelector("#last-name");
+        this.birthDateHolder = document.querySelector("#birth-date");
+        this.ageHolder = document.querySelector("age");
+        this.emailHolder = document.querySelector("#email");
+        this.addressHolder = document.querySelector("#address");
+        this.userImgHolder = document.querySelector(#user-image);
+        this.updateUserBtn = document.querySelector(#update-user);
+
+        this.updateUserClick();
+
+    async updateUser(user, id) {
+        try {
+            const response = await fetch("https://dummyjson.com/users/ + id", {
+                method:"PUT",
+                body:JSON.stringify(user),
+                headers:{"content-type":"application/json"}
+            });
+
+            const json = await response.json();
+            console.log(json);
+
+            if(response.ok){
+                alert("Sikeres felülírás");
+            } else {
+                alert("A felülírás sikertelen volt");
+            }
+        } catch(err) {
+            console.log(err);
+        }
+    }
+
+    async updateUserClick() {
+
+        thisupdateUserBtn.addEventListener("click", ()=> {
+
+        const user = {
+            firstName:this.firstNameHolder.value.trim(), 
+            lastName:this.lastNameHolder.value.trim(),
+            birthDate:this.birthDateHolder.value,
+            age:parseInt(this.ageHolder.value),
+            email:this.emailHOlder.value.trim(),
+            address:this.addressHolder.value.trim()
+        };
+
+        console.log(user);
+
+            this.updateUser(user, urlObj.query.id);
+
+            console.log(urlObj);
+        });
+    }
+}
+
+console.log(urlObj);
+
+{...}
+    getBaseUrl: f getBaseUrl()
+    host: "127.0.0.1"
+    path: "/user.html"
+    port: "5500"
+    protocol: "http:"
+    query: {id:'8'}
+    [[prototype]]: Object
+
+ez van beírva url-nek a böngészőben most -> 127.0.0.1:5500/user.html?id=8
+
+most azzokkal az adatokkal, amik alapból be voltak írva megnyomtuk a felülírás update gombot 
+
+Kaptunk egy közlendőt az alert-re, amit csináltunk, hogy Sikeres felülírás 
+
+console.log(json)
+-> 
+{...}
+    address{address: '5601 West Crocus Drive', city: 'Glendale'}
+    age: 29
+    bank: {cardExpire: '', cardNumber: '', cardType: ''}
+    birthDate: "1964-08-24"
+    bloodGroup: "A-"
+    email: "ggude7@chrone.com"
+    eyeColor: "blue"
+    gender: "male"
+    hair: {color: '', type: ''}
+    height: 146
+    id: 8 
+    lastName: "Mueller"
+    stb...
+**************************************************************************************************************************************
+Mi az amit még itt meg lehetne csinálni 
+-> 
+Ellenőrizhetnénk az adatok formátumát 
+
+Tehát ha megnézzük itt a user objektumot 
+console.log(user)
+{...}
+    address"Glendale, 5601 West Crocus Drive"
+    age: 29
+    birthDate: "1964-08-24"
+    email: "ggude7@chrone.com"
+    fistName: "Ewell"
+    lastName: "Mueller"
+    [[Prototype]]: Object
+
+************************************************************************************************************************************
+regex.js
+
+csinálunk a updateUserClick felé egy checkInputs nevű metódust, ahol bekérünk egy user-t!!!!! 
+checkInputs(user) {
+    const errors = [];
+
+    if(user.firstName.length === 0)
+        errors.push("A keresztnév mező nem maradhat üres!");
+    if(user.lastName.length === 0)
+        errors.push("A vezetéknév mező nem maradhat üres!")
+    if(!/^[\d]{4}\-[\d]{2}\-[\d]{2}$/.test(user.birthDate))
+        errors.push("a dátum mező formátuma nem megfelelő!")
+    if(!/^([\w\.\-\_]{0-255})\@([\w\.\-\_]{0-255})\.([\w]{2,})$/).test(user.email)
+        errors.psuh("Az email cím formátuma nem megfelelő")
+    return errors; vagy throw errors;
+}
+
+ezzel le tudjuk ellenőrozni a birthdate-et -> [\d]{4}\-[\d]{2}\-[\d]{2}
+ez egy valid színtaktika így /[\d]{4}\-[\d]{2}\-[\d]{2}/ -> ez egy regex objektum 
+Ha azt akarjuk, hogy egymás után ne fogadjon el több valid email címet, csak eggyet, 
+akkor az elejére rakunk egy ^ végére meg egy $!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+->
+/^[\d]{4}\-[\d]{2}\-[\d]{2}$/
+és ennek van egy test-je!!!!!!.test()
+()-be meg be kell írni, hogy mit szeretnénk ellenőrizni 
+->
+/^[\d]{4}\-[\d]{2}\-[\d]{2}$/.test(user.birthDate)
+és a legvégén meg kell egy !, szóval, ha ez nem így van, akkor kell nekünk egy hibaüzenetet küldenünk 
+-> 
+if(!/^[\d]{4}\-[\d]{2}\-[\d]{2}$/.test(user.birthDate))
+
+email címnél pedig így fog kinézni
+->
+if(!/^([\w\.\-\_]{0-255})\@([\w\.\-\_]{0-255})\.([\w]{2,})$/).test(user.email)
+
+fontos dolgok
+->
+1. ! kell a tagadás 
+2. // kell belerakni az egészet 
+3. ^$ elejére meg a végére kellenek ezeket, hogy csak egyszer tudjuk helyesen beírni 
+4. .test() és akkor oda, hogy mit szeretnénk vele ellenőrizni -> pl. .test(user.email)
+
+Ha ezeket így szépen megcsináltuk, akkor két lehetőségünk van 
+1. return errors;
+2. throw errors; (amit majd egy try-catch blokkban el kell kapnunk)
+és fontos, hogy csak akkor dobjunk error-t, ha van a errors-ban valami -> errors.length > 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+checkInputs(user) {
+    const errors = [];
+
+    if(user.firstName.length === 0)
+        errors.push("A keresztnév mező nem maradhat üres!");
+    if(user.lastName.length === 0)
+        errors.push("A vezetéknév mező nem maradhat üres!")
+    if(!/^[\d]{4}\-[\d]{2}\-[\d]{2}$/.test(user.birthDate))
+        errors.push("A dátum mező formátuma nem megfelelő!")
+    if(!/^([\w\.\-\_]{0-255})\@([\w\.\-\_]{0-255})\.([\w]{2,})$/).test(user.email)
+        errors.psuh("Az email cím formátuma nem megfelelő")
+    
+    if(errors.length > 0)
+        throw errors;
+}
+
+az updateUser-nél meghívjuk a this.checkInputs(user) a try-blokkban!!!
+catch blokkban pedig 
+if(Array.isArray(err)) {
+    alert(err.join("\n"));
+}
+azért kellett ez az isArray-es dolog, mert ez a catch ág sokféle error-t el tud kapni, de a mi errorjaink egy array-ben vannak 
+és az szeretnénk, hogy csak azokat a hibákat írja ki!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+a \n meg azt csinálja, hogy nem egymás mellett lesznek hanem egymás alatt 
+\n -> newline 
+join -> a tömböknek az elemeit összefüzzük egy határolókarakter mentén és itt ez a \n, tehát a sortörés 
+azért, mert az alert az úgy müködik mint egy plain text file, egy sima text file ebben az esetben, tehát nem a br a sortörés 
+hanem a \n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    async updateUser(user, id) {
+        try {
+            this.checkInput(user) !!!!!!!
+            const response = await fetch("https://dummyjson.com/users/ + id", {
+                method:"PUT",
+                body:JSON.stringify(user),
+                headers:{"content-type":"application/json"}
+            });
+
+            const json = await response.json();
+            console.log(json);
+
+            if(response.ok){
+                alert("Sikeres felülírás");
+            } else {
+                alert("A felülírás sikertelen volt");
+            }
+        } catch(err) {
+            console.log(err);
+            if(Array.isArray(err)) { !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                alert(err.join("\n"));
+            }
+        }
+    }
+
+és ha most van valami hibánk akkor lejön egy alert-ben a hibaüzenetek egymás alatt lesznek
+-> 
+A dátum mező formátuma nem megfelelő!
+Az email cím formátuma nem megfelelő
+
+mivel a constructor-ban hoztuk létre ezt az eventListener-t 
+->
+itt van meghívva a updateUserClick, amiben van egy eventListener is 
+És contructor az nem csak akkor fut le amikor nem a .html?id=8 oldalakon vagyunk, ahol az adatokat megjelenítjük hanem 
+a főoldalon is lefut, mert ott is példányosítva van 
+
+Ezért az async updateUserClick.ben azt írjuk, hogyha a updateUserBtn === null akkor return 
+ezzel azt csináltunk, hogyha a button létezik csak akkor fusson le, tehát ha azon az oldalon vagyunk ahol van a button 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-> 
+    async updateUserClick() {
+        if(this.updateUserBtn === null)
+            return;
+
+        thisupdateUserBtn.addEventListener("click", ()=> {
+        const user = {
+            firstName:this.firstNameHolder.value.trim(), 
+            lastName:this.lastNameHolder.value.trim(),
+            birthDate:this.birthDateHolder.value,
+            age:parseInt(this.ageHolder.value),
+            email:this.emailHOlder.value.trim(),
+            address:this.addressHolder.value.trim()
+        };
+
+        console.log(user);
+
+            this.updateUser(user, urlObj.query.id);
+
+            console.log(urlObj);
+        });
+    }
+}
+******************************************************************************************************************************
+Fontos!!!!!!!!!!!!!!
+Megnézzük, hogy lehet lapozni 
+ehhez kell egy page és egy maxPage!!!! 
+class Users {
+    userHolder;
+    firstNameHolder;
+    lastNameHolder;
+    birthDateHolder;
+    ageHolder;
+    emailHolder;
+    addressHolder;
+    userImgHolder;
+    updateUserBtn;
+    page;
+    maxPage;
+    nextBtn;
+    prevBtn;
+    pageH4;
+
+    constructor() {
+        this.usersHolder = document.querySelector("#users-holder");
+        this.firstNameHolder = document.querySelector("#first-name");
+        this.lastNameHolder = document.querySelector("#last-name");
+        this.birthDateHolder = document.querySelector("#birth-date");
+        this.ageHolder = document.querySelector("age");
+        this.emailHolder = document.querySelector("#email");
+        this.addressHolder = document.querySelector("#address");
+        this.userImgHolder = document.querySelector(#user-image);
+        this.updateUserBtn = document.querySelector(#update-user);
+        this.page = 1;
+        this.maxPage = 0;
+        this.prevBtn = document.querySelector("prev");
+        this.nextBtn = document.querySelector("next");
+        this.pageH4 = document.querySelector("page");
+        this.nextBtn();
+        this.prevBtn();
+
+        this.updateUserClick();
+
+page az eggyel fog kezdödni, a maxPage pedig itt még nullával fog kezdőni!!!!!
+de amikor a getUsers-vel leszedjük az adatokat, akkor ott a json 
+console.log(json);
+{user: Array(30)...}
+    limit: 30
+    skip: 0 
+    total: 100
+    users: (30) [{...}, {...}, {...}]
+
+itt van ez a total-os dolog és maxPage az egyenlő lesz ezzel 
+this.maxPage = json.total;
+
+megcsináljuk a html szerkezetet 
+lesznek majd html entity-t -> &lt; meg a &gt; ez az előre meg hátra mutató nyilak!!!!! << >> 
+ezzekkel a html entity-kkel speciaális karaktereket lehet így kiírni 
+-> 
+    <div class="pagination">
+        <div>
+            <button id="prev">&lt;</button>
+        </div>
+        <div>
+            <h4 id="page">1/10</h4>
+        </div>
+        <div>
+            <button id="next">&lt;</button>
+        </div>
+    </div>
+
+    .pagination {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    max-width: 300px;
+    margin: 15px auto;
+}
+
+és akkor még ezeket a dolgokat, amiket itt csináltunk id-vel, azokat lementjük, kicsit fölötte van a constructor oda írom ezeket 
+le vannak mentve querySelector-vel, mindegyik button meg a h4-es is 
+
+így néz ki a limit and skip products a dummyjson-on 
+->
+fetch('https://dummyjson.com/products?limit=10&skip=10&select=title,price')
+.then(res => res.json())
+.then(console.log);
+
+most a getUsers-ben megcsináljuk a limit-et meg a skip-et 
+Skip-nek lesz a nagy szerepe, mert az az lesz, hogy this.page-1 szorozva a limittel, ami itt jelen esetben 24
+
+async getUsers() {
+    try {
+        const skip = (this.page-1) * 24;
+        const response = await fetch("https://dummyjson.com/users?limit=24"&skip=" + skip);
+        const json = response.json();
+        this.maxPage = json.total;
+    }
+}
+
+legalul csinálunk egy next-et 
+next() {
+    this.nextBtn.addEventListener("click", ()=> {
+        if(this.nextBtn === null)
+            return;
+        this.page++;
+        this.getUsers();
+    });
+}
+Meg kell hívni a getUsers-et, mert ott csináltuk meg a page változó nővekedjen eggyel 
+Fontos, hogy itt majd ellenőrizni kell azt, hogy nem léptünk túl a megadott kereteken, tehát nem akarunk több terméket leszedni, mint ami 
+létezik 
+ezt a next-et majd meghívjuk a constructor-ban és itt is vigyázni kell arra, hogyha ez a nextBtn az null akkor return!!!!
+
+most betöltött még ugyanannyit, de mi nem ezt szeretnénk, hanem hogy lapozzon, ezért 
+-> 
+if(response.ok) 
+    this.userHolder.innerHTML = "";
+
+megcsináljuk a prevBtn-t is 
+prev() {
+    this.prevBtn.addEventListener("click", ()=> {
+        if(this.prevBtn === null)
+            return;
+        this.page--;
+        this.getUsers();
+    });
+}
+Itt még be tud menni minuszba meg nem mutatja, hogy hányadik oldalon vagyunk!!!
 */
