@@ -1,0 +1,54 @@
+* {
+    margin: 0;
+    padding: 0;
+    background-origin: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 10px 0;
+}
+
+p {
+    padding: 10px 0;
+}
+
+.container {
+    max-width: 1080px;
+    margin: auto;
+    padding: 15px;
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 15px;
+}
+
+.user, .box {
+    background-color: #b0edb8;
+    border: 1px solid #90c396;
+    padding: 15px;
+    text-align: center;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.user-img {
+    width: 100%; /*azért 100% a width, hogy felvegye, amiben benne van a 100%-át, responsiveness!!*/
+}
+
+.user-img img {
+   width: 100%;
+   height: 250px;
+   object-fit: cover; 
+}
+
+.data-box {
+    background-color: white;
+    margin: 5px;
+    border-radius: 4px;
+    padding: 4px;
+}
